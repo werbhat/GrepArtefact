@@ -1,45 +1,42 @@
 #!/bin/bash
-#
-# author : werbhat
-# script to grep artefact in the file 
-#
+
+## Author : Werbhat
+# Script to grep artefacts in the file 
 
 # Couleurs
 RED='\e[1;31m'
 GREEN='\e[1;32m'
 YELLOW='\e[1;33m'
 BLUE='\e[1;34m'
-NC='\e[0m '
+NC='\e[0m' # No Color
 
-# create your banner with package figlet: www.figlet.com
+# Banner
 echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
 figlet -k WerbHat
 echo ""
-echo "version 1.0"
+echo "Version 2.0"
 echo ""
 echo -e "${YELLOW} With this script, we can find artefact in the file."
-echo -e "${YELLOW} For exemple, you can find ipv4_address, email, domain"
-echo -e "${YELLOW} cmd : ./grepartefact.sh file -ip4 -dom"
+echo -e "${YELLOW} For example, you can find IPv4 address, email, domain"
+echo -e "${YELLOW} Command: ./grepartefact.sh file -ip4 -dom"
 echo -e "${RED}   -help for display available options"
 echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
-#################################################################
 
-
-# user guide
+# User guide
 usage() {
-    echo -e "${GREEN}Usage:${NC} $0 <file> <options...>"
-    echo "Available Options :"
-    echo "  -ip4    IPv4 Address"
-    echo "  -email  Emails Address"
-    echo "  -dom    Domains names"
-    echo "  -url    URLs"
-    echo "  -mac    MAC Address"
-    echo "  -phone  Phone Numbers"
-    echo "  -dateUS Dates (ISO 8601)"
-    echo "  -dateFR Dates French"
-    echo "  -ip6    IPv6 Address"
-    echo "  -www    URLs begin by www"
-    echo "  -cc     Credit card numbers"
+    echo -e "${GREEN}Usage:${NC} $0 <file> <options...> [-o output_file]"
+    echo -e "${BLUE}Available Options:${NC}"
+    echo -e "  ${YELLOW}-ip4${NC}    IPv4 Addresses"
+    echo -e "  ${YELLOW}-email${NC}  Email Addresses"
+    echo -e "  ${YELLOW}-dom${NC}    Domain Names"
+    echo -e "  ${YELLOW}-url${NC}    URLs"
+    echo -e "  ${YELLOW}-mac${NC}    MAC Addresses"
+    echo -e "  ${YELLOW}-phone${NC}  Phone Numbers"
+    echo -e "  ${YELLOW}-dateUS${NC} Dates (ISO 8601)"
+    echo -e "  ${YELLOW}-dateFR${NC} Dates (French)"
+    echo -e "  ${YELLOW}-ip6${NC}    IPv6 Addresses"
+    echo -e "  ${YELLOW}-www${NC}    URLs beginning with www"
+    echo -e "  ${YELLOW}-all${NC}    All of the above"
     exit 1
 }
 
@@ -53,77 +50,73 @@ fi
 
 file=$1
 shift
-file_report="grep_report_$(date +'%Y%m%d_%H%M%S').txt"
+file_report=""
+search_all=false
+declare -A patterns=(
+    ["-ip4"]="IPv4 Addresses:|([0-9]{1,3}\.){3}[0-9]{1,3}"
+    ["-email"]="Email Addresses:|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}"
+    ["-dom"]="Domain Names:|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}"
+    ["-url"]="URLs:|https?://[a-zA-Z0-9./?=_-]+"
+    ["-mac"]="MAC Addresses:|([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}"
+    ["-phone"]="Phone Numbers:|\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}"
+    ["-dateUS"]="Dates (ISO 8601):|\b\d{4}-\d{2}-\d{2}\b"
+    ["-dateFR"]="Dates (French):|\b[0-3][0-9]/[0-1][0-9]/[0-9]{4}\b"
+    ["-ip6"]="IPv6 Addresses:|([a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}"
+    ["-www"]="URLs beginning with www:|www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}"
+)
 
-echo -e "${BLUE}Analyse report of file $fichier${NC}" > $file_report
-echo -e "${BLUE}Date:${NC} $(date)" >> $file_report
-echo "" >> $file_report
+# Check for -o option for output file
+while (( "$#" )); do
+    if [[ "$1" == "-o" ]]; then
+        shift
+        file_report=$1
+        shift
+    else
+        break
+    fi
+done
 
+if [ -n "$file_report" ]; then
+    echo -e "${BLUE}Analysis report of file $file${NC}" > $file_report
+    echo -e "${BLUE}Date:${NC} $(date)" >> $file_report
+    echo "" >> $file_report
+fi
 
 while (( "$#" )); do
-    case "$1" in
-        -ip4)
-            echo -e "${YELLOW}IPv4 Address :${NC}" >> $file_report
-            grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' $file >> $file_report
+    if [[ "$1" == "-all" ]]; then
+        search_all=true
+    elif [[ -n "${patterns[$1]}" ]]; then
+        if [ -n "$file_report" ]; then
+            echo -e "${YELLOW}${patterns[$1]%%|*}${NC}" >> $file_report
+            grep -Eo "${patterns[$1]#*|}" $file >> $file_report
             echo "" >> $file_report
-            ;;
-        -email)
-            echo -e "${YELLOW}Emails Address :${NC}" >> $file_report
-            grep -Eo '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -dom)
-            echo -e "${YELLOW}Domains Names :${NC}" >> $file_report
-            grep -Eo '([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -url)
-            echo -e "${YELLOW}URLs :${NC}" >> $file_report
-            grep -Eo 'https?://[a-zA-Z0-9./?=_-]+' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -mac)
-            echo -e "${YELLOW}MAC Address :${NC}" >> $file_report
-            grep -Eo '([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -phone)
-            echo -e "${YELLOW}Tel Numbers :${NC}" >> $file_report
-            grep -Eo '\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -dateUS)
-            echo -e "${YELLOW}Dates (ISO 8601) :${NC}" >> $file_report
-            grep -Eo '\b\d{4}-\d{2}-\d{2}\b' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -dateFR)
-            echo -e "${YELLOW}Dates (ISO 8601) :${NC}" >> $file_report
-            grep -Eo '\b[0-3][0-9]/[0-1][0-9]/[0-9]{4}\b' $file >> $file_report
-            echo "" >> $file_report
-            ;;            
-        -ip6)
-            echo -e "${YELLOW}IPv6 Address :${NC}" >> $file_report
-            grep -Eo '([a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -www)
-            echo -e "${YELLOW}URLs begin by www :${NC}" >> $file_report
-            grep -Eo 'www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        -cc)
-            echo -e "${YELLOW}Credit card numbers :${NC}" >> $file_report
-            grep -Eo '\b4[0-9]{12}(?:[0-9]{3})?\b|\b5[1-5][0-9]{14}\b' $file >> $file_report
-            echo "" >> $file_report
-            ;;
-        *)
-            echo -e "${RED}Available Options :$1${NC}" >> $file_report
-            echo "Available Options : -ip4, -email, -dom, -url, -mac, -tel, -date, -ip6, -www, -cc" >> $file_report
-            ;;
-    esac
+        else
+            echo -e "${YELLOW}${patterns[$1]%%|*}${NC}"
+            grep -Eo "${patterns[$1]#*|}" $file
+            echo ""
+        fi
+    else
+        echo -e "${RED}Invalid option: $1${NC}" >&2
+        usage
+    fi
     shift
 done
 
+if $search_all; then
+    for key in "${!patterns[@]}"; do
+        if [ -n "$file_report" ]; then
+            echo -e "${YELLOW}${patterns[$key]%%|*}${NC}" >> $file_report
+            grep -Eo "${patterns[$key]#*|}" $file >> $file_report
+            echo "" >> $file_report
+        else
+            echo -e "${YELLOW}${patterns[$key]%%|*}${NC}"
+            grep -Eo "${patterns[$key]#*|}" $file
+            echo ""
+        fi
+    done
+fi
 
-cat $file_report
+if [ -n "$file_report" ]; then
+    cat $file_report
+fi
+

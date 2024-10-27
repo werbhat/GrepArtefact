@@ -34,8 +34,9 @@ usage() {
     echo "  -dom    Domains names"
     echo "  -url    URLs"
     echo "  -mac    MAC Address"
-    echo "  -tel    Tel Numbers"
-    echo "  -dateUS   Dates (ISO 8601)"
+    echo "  -phone  Phone Numbers"
+    echo "  -dateUS Dates (ISO 8601)"
+    echo "  -dateFR Dates French"
     echo "  -ip6    IPv6 Address"
     echo "  -www    URLs begin by www"
     echo "  -cc     Credit card numbers"
@@ -86,16 +87,21 @@ while (( "$#" )); do
             grep -Eo '([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}' $file >> $file_report
             echo "" >> $file_report
             ;;
-        -tel)
+        -phone)
             echo -e "${YELLOW}Tel Numbers :${NC}" >> $file_report
             grep -Eo '\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}' $file >> $file_report
             echo "" >> $file_report
             ;;
-        -date)
+        -dateUS)
             echo -e "${YELLOW}Dates (ISO 8601) :${NC}" >> $file_report
             grep -Eo '\b\d{4}-\d{2}-\d{2}\b' $file >> $file_report
             echo "" >> $file_report
             ;;
+        -dateFR)
+            echo -e "${YELLOW}Dates (ISO 8601) :${NC}" >> $file_report
+            grep -Eo '\b[0-3][0-9]/[0-1][0-9]/[0-9]{4}\b' $file >> $file_report
+            echo "" >> $file_report
+            ;;            
         -ip6)
             echo -e "${YELLOW}IPv6 Address :${NC}" >> $file_report
             grep -Eo '([a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}' $file >> $file_report

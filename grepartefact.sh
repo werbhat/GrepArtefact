@@ -95,7 +95,7 @@ declare -A patterns=(
 )
 
 if [ -n "$file_report" ]; then
-    echo -e "${GREEN}Genereted by werbhat's script, grepartefact.sh > $file_report
+    echo -e "${GREEN}Genereted by werbhat's script, grepartefact.sh ${NC}" > $file_report
     echo -e "${BLUE}Analysis report of file $file${NC}" >> $file_report
     echo -e "${BLUE}Date:${NC} $(date)" >> $file_report
     echo "" >> $file_report

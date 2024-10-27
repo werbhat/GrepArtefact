@@ -10,20 +10,21 @@ YELLOW='\e[1;33m'
 BLUE='\e[1;34m'
 NC='\e[0m' # No Color
 
-# Banner
-echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
-figlet -k WerbHat
-echo ""
-echo "Version 2.1"
-echo ""
-echo -e "${YELLOW} With this script, we can find artefact in the file."
-echo -e "${YELLOW} For example, you can find IPv4 address, email, domain"
-echo -e "${YELLOW} Command: ./grepartefact.sh -f file -ip4 -dom -o output_report.txt"
-echo -e "${BLUE}   -help for display available options"
-echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
 
 # User guide
 usage() {
+    # Banner
+    echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
+    figlet -k WerbHat
+    echo ""
+    echo "Version 2.1"
+    echo ""
+    echo -e "${YELLOW} With this script, we can find artefact in the file."
+    echo -e "${YELLOW} For example, you can find IPv4 address, email, domain"
+    echo -e "${YELLOW} Command: ./grepartefact.sh -f file -ip4 -dom -o output_report.txt"
+    echo -e "${BLUE}   -help for display available options"
+    echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
+
     echo -e "${GREEN}Usage:${NC} $0 -f <file> <options...> [-o output_file]"
     echo -e "${BLUE}Available Options:${NC}"
     echo -e "  ${YELLOW}-all${NC}    All of the above"
@@ -94,7 +95,8 @@ declare -A patterns=(
 )
 
 if [ -n "$file_report" ]; then
-    echo -e "${BLUE}Analysis report of file $file${NC}" > $file_report
+    echo -e "${GREEN}Genereted by werbhat's script, grepartefact.sh > $file_report
+    echo -e "${BLUE}Analysis report of file $file${NC}" >> $file_report
     echo -e "${BLUE}Date:${NC} $(date)" >> $file_report
     echo "" >> $file_report
 fi

@@ -12,7 +12,7 @@ NC='\e[0m' # No Color
 
 
 # User guide
-help() {
+usage() {
     # Banner
     echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
     figlet -k WerbHat
@@ -22,10 +22,10 @@ help() {
     echo -e "${YELLOW} With this script, we can find artefact in the file."
     echo -e "${YELLOW} For example, you can find IPv4 address, email, domain"
     echo -e "${YELLOW} Command: ./grepartefact.sh -f file -ip4 -dom -o output_report.txt"
-    echo -e "${BLUE}   -help for display available options"
+    echo -e "${BLUE}   -usage for display available options"
     echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
 
-    echo -e "${GREEN}help:${NC} $0 -f <file> <options...> [-o output_file]"
+    echo -e "${GREEN}usage:${NC} $0 -f <file> <options...> [-o output_file]"
     echo -e "${BLUE}Available Options:${NC}"
     echo -e "  ${YELLOW}-all${NC}    All of the above"
     echo -e "  ${YELLOW}-ip4${NC}    IPv4 Addresses"
@@ -46,13 +46,13 @@ file_report=""
 search_all=false
 
 if [ -z "$1" ]; then
-    help
+    usage
 fi
 
 while (( "$#" )); do
     case "$1" in
-        -help)
-            help
+        -usage)
+            usage
             ;;
         -f)
             shift
@@ -70,7 +70,7 @@ while (( "$#" )); do
             ;;
         *)
             echo -e "${RED}Invalid option: $1${NC}" >&2
-            help
+            usage
             ;;
     esac
     shift
@@ -78,7 +78,7 @@ done
 
 if [ -z "$file" ]; then
     echo -e "${RED}Error: Input file not specified. Use -f to specify the file.${NC}" >&2
-    help
+    usage
 fi
 
 declare -A patterns=(

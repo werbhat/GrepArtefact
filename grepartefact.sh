@@ -12,7 +12,7 @@ NC='\e[0m' # No Color
 
 
 # User guide
-usage() {
+help() {
     # Banner
     echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
     figlet -k WerbHat
@@ -25,7 +25,7 @@ usage() {
     echo -e "${BLUE}   -help for display available options"
     echo -e "${YELLOW} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${NC}"
 
-    echo -e "${GREEN}Usage:${NC} $0 -f <file> <options...> [-o output_file]"
+    echo -e "${GREEN}help:${NC} $0 -f <file> <options...> [-o output_file]"
     echo -e "${BLUE}Available Options:${NC}"
     echo -e "  ${YELLOW}-all${NC}    All of the above"
     echo -e "  ${YELLOW}-ip4${NC}    IPv4 Addresses"
@@ -46,13 +46,13 @@ file_report=""
 search_all=false
 
 if [ -z "$1" ]; then
-    usage
+    help
 fi
 
 while (( "$#" )); do
     case "$1" in
         -help)
-            usage
+            help
             ;;
         -f)
             shift
@@ -70,7 +70,7 @@ while (( "$#" )); do
             ;;
         *)
             echo -e "${RED}Invalid option: $1${NC}" >&2
-            usage
+            help
             ;;
     esac
     shift
@@ -78,7 +78,7 @@ done
 
 if [ -z "$file" ]; then
     echo -e "${RED}Error: Input file not specified. Use -f to specify the file.${NC}" >&2
-    usage
+    help
 fi
 
 declare -A patterns=(
